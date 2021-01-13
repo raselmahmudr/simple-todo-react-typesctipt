@@ -2,17 +2,18 @@
 
 import React from "react"
 import {render} from "react-dom"
+import { Provider } from "react-redux";
 
 import App from "./App";
 
 
-import { StoreProvider } from "./store"
+import store from "./store"
 
 
 render(
-  <StoreProvider>
+  <Provider store={store}>
     <App/>
-  </StoreProvider>,
+  </Provider>,
   document.getElementById("root")
 )
 

@@ -1,5 +1,6 @@
-
 import React, {FC} from "react"
+import { createStore} from "redux";
+
 
 // model
 import {DispatchType,  Todo} from "./interfaces/Todo"
@@ -31,16 +32,8 @@ function todoReducer(state: Todo[] = initialState, action: DispatchType ): Todo[
   }
 }
 
-export const Store = React.createContext<any>(initialState)
+export default  createStore(todoReducer)
 
-
-// * this Context Provider + useReducer State
-export function StoreProvider(props: any) : JSX.Element {
-  const [state, dispatch] = React.useReducer(todoReducer, initialState)
-
-  return <Store.Provider value={{state, dispatch}}>{props.children}</Store.Provider>
-
-}
 
 
 

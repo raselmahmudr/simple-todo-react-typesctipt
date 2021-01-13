@@ -1,24 +1,22 @@
 import React, { FC } from 'react';
 
 import "./App.scss"
+import {connect} from "react-redux";
 
 
 import {  Todo, DispatchType} from "./interfaces/Todo"
+import {addTodo, deleteTodo, toggleComplete} from "./actions";
 
 
 
-import {  Store } from "./store"
 
 const App: FC = (props ) => {
-
-  // * use hook to get context
-  // const {state, dispatch} = React.useContext(Store)
 
   return (
       <div className="todo-app">
          <h1 className="main-title">Todo with Redux</h1>
-         <AddTodo />
-         <TodoList />
+        <ConnectedAddTodo />
+        <ConnectedTodoList />
       </div>
   );
 };
@@ -26,12 +24,16 @@ const App: FC = (props ) => {
 export default App
 
 
+type TodoListProps = {
+  todos: any[]
+  deleteTodo(id:string):any
+  toggleComplete(id:string):any
+}
 
-const TodoList: FC<{}> =(props)=>{
+const TodoList: FC<TodoListProps> =(props)=>{
 
-  const { state, dispatch} = React.useContext<{state: Todo[], dispatch(obj: DispatchType ):any }>(Store)
 
-  const todos = state
+  let todos = props.todos
 
 
   const activeTodos: Todo[] = []
@@ -44,19 +46,6 @@ const TodoList: FC<{}> =(props)=>{
     }
   }
 
-  function toggleComplete(id:string){
-    dispatch({
-      type: "TOGGLE_TODO",
-      payload: { id: id }
-    })
-  }
-  function deleteTodo(id:string){
-    dispatch({
-      type: "DELETE_TODO",
-      payload: { id: id }
-    })
-  }
-
   return (
     <div className="todo-list">
       <ul className="active-todo" >
@@ -64,8 +53,8 @@ const TodoList: FC<{}> =(props)=>{
         <h4>Active todo</h4>
         { activeTodos.map(todo=>(
           <li key={todo.id}>
-            <span onClick={(e)=>toggleComplete(todo.id)}> {todo.title}</span>
-            <i className="fa fa-trash" onClick={(e)=>deleteTodo(todo.id)} />
+            <span onClick={(e)=>props.toggleComplete(todo.id)}> {todo.title}</span>
+            <i className="fal fa-trash" onClick={(e)=>props.deleteTodo(todo.id)} />
           </li>
         )) }
       </ul>
@@ -73,8 +62,8 @@ const TodoList: FC<{}> =(props)=>{
         <h4>Complete todo</h4>
         { completeTodos.map(todo=>(
           <li key={todo.id}>
-            <span onClick={(e)=>toggleComplete(todo.id)}> {todo.title}</span>
-            <i className="fa fa-trash" onClick={(e)=>deleteTodo(todo.id)} />
+            <span onClick={(e)=>props.toggleComplete(todo.id)}> {todo.title}</span>
+            <i className="fal fa-trash" onClick={(e)=>props.deleteTodo(todo.id)} />
           </li>
         )) }
       </ul>
@@ -82,23 +71,24 @@ const TodoList: FC<{}> =(props)=>{
   );
 };
 
+function mapToStateProps(state: Todo[]) : { todos: Todo[] }  {
+  return { todos: state }
+}
+
+let ConnectedTodoList = connect(mapToStateProps, { toggleComplete, deleteTodo  })(TodoList)
 
 
+type AddTodoProps = {
+  addTodo(todo: Todo):any
+}
 
-const AddTodo: FC<{}> =(props)=>{
+const AddTodo: FC<AddTodoProps> =(props)=>{
   const input = React.useRef<HTMLInputElement>(null)
-
-  const { state, dispatch} = React.useContext<{state: Todo[], dispatch(obj: DispatchType ):any }>(Store)
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     if(input.current!.value){
-      dispatch({
-        type: "ADD_TODO",
-        payload: {
-          todo: { id: Math.random().toString(), title: input.current!.value, isComplete: false }
-        }
-      })
+      props.addTodo({ id: Math.random().toString(), title: input.current!.value, isComplete: false })
       input.current!.value = ""
     }
   }
@@ -115,3 +105,6 @@ const AddTodo: FC<{}> =(props)=>{
     </div>
   );
 };
+
+let ConnectedAddTodo = connect(mapToStateProps, { addTodo })(AddTodo)
+
