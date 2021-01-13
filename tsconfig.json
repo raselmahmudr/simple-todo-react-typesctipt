@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+//    "allowSyntheticDefaultImports": true,  // for named export
+    "isolatedModules": true,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+//    "experimentalDecorators": true,
+    "noEmit": false,
+    "strict": true,
+//    "noImplicitReturns": true,
+//    "noUnusedParameters": false,
+//    "noUnusedLocals": false,
+    "esModuleInterop": true,
+    "target": "es6",
+    "jsx": "react",
+    "allowJs": true,
+    "lib": [
+      "dom",
+      "es6"
+    ]
+  },
+//  "include": [
+//    "src/**"
+//  ],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
+}
+
