@@ -1,22 +1,43 @@
 import React, { FC } from 'react';
 
 import "./App.scss"
-import {connect} from "react-redux";
 
 
 import {  Todo, DispatchType} from "./interfaces/Todo"
-import {addTodo, deleteTodo, toggleComplete} from "./actions";
-
-
 
 
 const App: FC = (props ) => {
+  const [ todos, setTodo ] = React.useState<Todo[]>([])
+
+  const addTodoHandle=(title:string): void =>{
+    let newTodo:Todo = {
+      id: Math.random().toString(),
+      title,
+      isComplete: false
+    }
+    setTodo(prevState=>[...prevState, newTodo ])
+  }
+
+  function deleteTodoHandle(id: string) :void{
+    setTodo(todos.filter(item=> item.id !== id ))
+  }
+  function completeTodoHandle(id: string) :void{
+    let copyTodo = [...todos]
+    let findIndex = copyTodo.findIndex(t=>t.id === id)
+    if (copyTodo[findIndex].isComplete){
+      copyTodo[findIndex].isComplete = !todos[findIndex].isComplete
+      setTodo( copyTodo )
+    } else{
+      copyTodo[findIndex].isComplete = true
+      setTodo( copyTodo )
+    }
+  }
 
   return (
       <div className="todo-app">
-         <h1 className="main-title">Todo with Redux</h1>
-        <ConnectedAddTodo />
-        <ConnectedTodoList />
+         <h1 className="main-title">Todo with Local State</h1>
+        <AddTodo onAddTodoHandler={addTodoHandle} />
+        <TodoList onTodoComplete={completeTodoHandle} onDeleteTodo={deleteTodoHandle} todos={todos}/>
       </div>
   );
 };
@@ -25,9 +46,9 @@ export default App
 
 
 type TodoListProps = {
-  todos: any[]
-  deleteTodo(id:string):any
-  toggleComplete(id:string):any
+  todos: Todo[]
+  onDeleteTodo(id: string):void
+  onTodoComplete(id: string):void
 }
 
 const TodoList: FC<TodoListProps> =(props)=>{
@@ -53,8 +74,8 @@ const TodoList: FC<TodoListProps> =(props)=>{
         <h4>Active todo</h4>
         { activeTodos.map(todo=>(
           <li key={todo.id}>
-            <span onClick={(e)=>props.toggleComplete(todo.id)}> {todo.title}</span>
-            <i className="fal fa-trash" onClick={(e)=>props.deleteTodo(todo.id)} />
+            <span onClick={(e)=>props.onTodoComplete(todo.id)}> {todo.title}</span>
+            <i className="fal fa-trash" onClick={(e)=>props.onDeleteTodo(todo.id)} />
           </li>
         )) }
       </ul>
@@ -62,8 +83,8 @@ const TodoList: FC<TodoListProps> =(props)=>{
         <h4>Complete todo</h4>
         { completeTodos.map(todo=>(
           <li key={todo.id}>
-            <span onClick={(e)=>props.toggleComplete(todo.id)}> {todo.title}</span>
-            <i className="fal fa-trash" onClick={(e)=>props.deleteTodo(todo.id)} />
+            <span onClick={(e)=>props.onTodoComplete(todo.id)}> {todo.title}</span>
+            <i className="fal fa-trash" onClick={(e)=>props.onDeleteTodo(todo.id)} />
           </li>
         )) }
       </ul>
@@ -71,16 +92,11 @@ const TodoList: FC<TodoListProps> =(props)=>{
   );
 };
 
-function mapToStateProps(state: Todo[]) : { todos: Todo[] }  {
-  return { todos: state }
-}
-
-let ConnectedTodoList = connect(mapToStateProps, { toggleComplete, deleteTodo  })(TodoList)
-
 
 type AddTodoProps = {
-  addTodo(todo: Todo):any
+  onAddTodoHandler(x:string):void
 }
+
 
 const AddTodo: FC<AddTodoProps> =(props)=>{
   const input = React.useRef<HTMLInputElement>(null)
@@ -88,7 +104,7 @@ const AddTodo: FC<AddTodoProps> =(props)=>{
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     if(input.current!.value){
-      props.addTodo({ id: Math.random().toString(), title: input.current!.value, isComplete: false })
+      props.onAddTodoHandler(input.current!.value)
       input.current!.value = ""
     }
   }
@@ -105,6 +121,4 @@ const AddTodo: FC<AddTodoProps> =(props)=>{
     </div>
   );
 };
-
-let ConnectedAddTodo = connect(mapToStateProps, { addTodo })(AddTodo)
 
