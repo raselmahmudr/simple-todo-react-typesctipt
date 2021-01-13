@@ -2,7 +2,7 @@
 
 ### This is project make three different kind of state management system
 
-* Local Component State:
+* **Local Component State**:
     in app component has state that pass inside child component
     and state update using passing callback function his children
 
@@ -23,4 +23,4 @@
 * optional property
 
 
-![](todo%20app%20with%20typescript%20v2.0.gif)
+![](todo%20app%20with%20typescript%20v1.0.gif)
